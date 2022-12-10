@@ -30,7 +30,7 @@ if (canvas && ctx) {
   });
 
   const shop = new Sprite({
-    position: { x: 600, y: 130 },
+    position: { x: 600, y: 128 },
     scale: 2.75,
     maxFrames: 6,
     imageSrc: "./assets/shop.png",
@@ -38,22 +38,28 @@ if (canvas && ctx) {
 
   const p1 = new Fighter({
     position: { x: 0, y: 0 },
-    velocity: { x: 0, y: 10 },
+    velocity: { x: 0, y: 0 },
     color: "red",
     offset: {
-      x: 0,
-      y: 0,
+      x: 215,
+      y: 183,
     },
+    imageSrc: "./assets/samuraiMack/Idle.png",
+    maxFrames: 8,
+    scale: 2.75,
   });
   const p2 = new Fighter({
-    position: { x: 400, y: 100 },
+    position: { x: 400, y: 0 },
     velocity: { x: 0, y: 0 },
     color: "blue",
-
     offset: {
-      x: 50,
-      y: 0,
+      x: 215,
+      y: 200,
     },
+    imageSrc: "./assets/kenji/Idle.png",
+    maxFrames: 4,
+    framesHold: 24,
+    scale: 2.75,
   });
   p1.draw(ctx);
   p2.draw(ctx);
