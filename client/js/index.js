@@ -68,14 +68,22 @@ if (canvas && ctx) {
         maxFrames: 6,
       },
     },
+    attackBox: {
+      offset: {
+        x: 100,
+        y: 50,
+      },
+      width: 140,
+      height: 50,
+    },
   });
   const p2 = new Fighter({
-    position: { x: 400, y: 0 },
+    position: { x: 400, y: 100 },
     velocity: { x: 0, y: 0 },
     color: "blue",
     offset: {
       x: 215,
-      y: 200,
+      y: 198,
     },
     imageSrc: "./assets/kenji/Idle.png",
     maxFrames: 4,
@@ -84,7 +92,7 @@ if (canvas && ctx) {
     sprites: {
       idle: {
         imageSrc: "./assets/kenji/Idle.png",
-        maxFrames: 8,
+        maxFrames: 4,
       },
       run: {
         imageSrc: "./assets/kenji/Run.png",
@@ -102,6 +110,14 @@ if (canvas && ctx) {
         imageSrc: "./assets/kenji/Attack1.png",
         maxFrames: 4,
       },
+    },
+    attackBox: {
+      offset: {
+        x: -175,
+        y: 50,
+      },
+      width: 175,
+      height: 50,
     },
   });
   p1.draw(ctx);
@@ -121,8 +137,6 @@ if (canvas && ctx) {
 
     // players movments
 
-    p2.image = p2.sprites.idle.image;
-
     if (KEYS.a.pressed && p1.lastKey === "a") {
       p1.velocity.x = -5;
       p1.switchSprite("run");
@@ -141,21 +155,46 @@ if (canvas && ctx) {
 
     if (KEYS.ArrowLeft.pressed && p2.lastKey === "ArrowLeft") {
       p2.velocity.x = -5;
-      p2.image = p2.sprites.run.image;
+      p2.switchSprite("run");
     } else if (KEYS.ArrowRight.pressed && p2.lastKey === "ArrowRight") {
       p2.velocity.x = 5;
-      p2.image = p2.sprites.run.image;
+      p2.switchSprite("run");
+    } else {
+      p2.switchSprite("idle");
+    }
+
+    if (p2.velocity.y < 0) {
+      p2.switchSprite("jump");
+    } else if (p2.velocity.y > 0) {
+      p2.switchSprite("fall");
     }
 
     // detect colision
-    if (retangularCollision(p1, p2) && p1.isAttacking) {
+    if (
+      retangularCollision(p1, p2) &&
+      p1.isAttacking &&
+      p1.framesCurrent === 4
+    ) {
+      p1.isAttacking = false;
+      p2.health -= 20;
       document.getElementById("p2Health").style.width = p2.health + "%";
-      p2.health -= 10;
     }
 
-    if (retangularCollision(p2, p1) && p2.isAttacking) {
+    if (p1.isAttacking && p1.framesCurrent === 4) {
+      p1.isAttacking = false;
+    }
+
+    if (
+      retangularCollision(p2, p1) &&
+      p2.isAttacking &&
+      p2.framesCurrent === 2
+    ) {
+      p2.isAttacking = false;
+      p1.health -= 20;
       document.getElementById("p1Health").style.width = p1.health + "%";
-      p1.health -= 10;
+    }
+    if (p2.isAttacking && p2.framesCurrent === 2) {
+      p2.isAttacking = false;
     }
     // end game based on health
     if (p2.health === 0) getMatchResult("P1 WINS");
