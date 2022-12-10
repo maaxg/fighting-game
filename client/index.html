@@ -5,11 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
-    `
+    <link rel="stylesheet" href="styles.css" />
     <title>Fighting Game</title>
   </head>
   <body>
-    <canvas></canvas>
+    <div class="container">
+      <section class="info">
+        <!-- P1 health -->
+        <div class="healthBar" style="display: flex; justify-content: flex-end">
+          <div class="health" style="width: 100%"></div>
+          <div id="p1Health" class="healthIndicator" style="width: 100%"></div>
+        </div>
+        <!-- Timer -->
+        <div id="timer" class="timer">10</div>
+        <!-- P2 Health -->
+        <div class="healthBar">
+          <div class="health"></div>
+          <div id="p2Health" class="healthIndicator"></div>
+        </div>
+      </section>
+      <div id="matchIndicator" class="mathcIndicator">Tie</div>
+      <canvas></canvas>
+    </div>
 
     <script type="module" src="js/index.js"></script>
   </body>
