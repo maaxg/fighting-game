@@ -1,6 +1,5 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
-const GRAVITY = 0.7;
 
 const KEYS = {
   a: {
@@ -47,6 +46,28 @@ if (canvas && ctx) {
     imageSrc: "./assets/samuraiMack/Idle.png",
     maxFrames: 8,
     scale: 2.75,
+    sprites: {
+      idle: {
+        imageSrc: "./assets/samuraiMack/Idle.png",
+        maxFrames: 8,
+      },
+      run: {
+        imageSrc: "./assets/samuraiMack/Run.png",
+        maxFrames: 8,
+      },
+      jump: {
+        imageSrc: "./assets/samuraiMack/Jump.png",
+        maxFrames: 2,
+      },
+      fall: {
+        imageSrc: "./assets/samuraiMack/Fall.png",
+        maxFrames: 2,
+      },
+      attack1: {
+        imageSrc: "./assets/samuraiMack/Attack1.png",
+        maxFrames: 6,
+      },
+    },
   });
   const p2 = new Fighter({
     position: { x: 400, y: 0 },
@@ -60,6 +81,28 @@ if (canvas && ctx) {
     maxFrames: 4,
     framesHold: 24,
     scale: 2.75,
+    sprites: {
+      idle: {
+        imageSrc: "./assets/kenji/Idle.png",
+        maxFrames: 8,
+      },
+      run: {
+        imageSrc: "./assets/kenji/Run.png",
+        maxFrames: 8,
+      },
+      jump: {
+        imageSrc: "./assets/kenji/Jump.png",
+        maxFrames: 2,
+      },
+      fall: {
+        imageSrc: "./assets/kenji/Fall.png",
+        maxFrames: 2,
+      },
+      attack1: {
+        imageSrc: "./assets/kenji/Attack1.png",
+        maxFrames: 4,
+      },
+    },
   });
   p1.draw(ctx);
   p2.draw(ctx);
@@ -78,15 +121,30 @@ if (canvas && ctx) {
 
     // players movments
 
+    p2.image = p2.sprites.idle.image;
+
     if (KEYS.a.pressed && p1.lastKey === "a") {
       p1.velocity.x = -5;
+      p1.switchSprite("run");
     } else if (KEYS.d.pressed && p1.lastKey === "d") {
       p1.velocity.x = 5;
+      p1.switchSprite("run");
+    } else {
+      p1.switchSprite("idle");
     }
+
+    if (p1.velocity.y < 0) {
+      p1.switchSprite("jump");
+    } else if (p1.velocity.y > 0) {
+      p1.switchSprite("fall");
+    }
+
     if (KEYS.ArrowLeft.pressed && p2.lastKey === "ArrowLeft") {
       p2.velocity.x = -5;
+      p2.image = p2.sprites.run.image;
     } else if (KEYS.ArrowRight.pressed && p2.lastKey === "ArrowRight") {
       p2.velocity.x = 5;
+      p2.image = p2.sprites.run.image;
     }
 
     // detect colision
@@ -108,6 +166,7 @@ if (canvas && ctx) {
     switch (event.key) {
       case "w": {
         p1.velocity.y = -20;
+
         break;
       }
       case "d": {
