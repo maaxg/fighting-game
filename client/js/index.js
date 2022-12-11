@@ -67,6 +67,14 @@ if (canvas && ctx) {
         imageSrc: "./assets/samuraiMack/Attack1.png",
         maxFrames: 6,
       },
+      takeHit: {
+        imageSrc: "./assets/samuraiMack/Take Hit - white silhouette.png",
+        maxFrames: 4,
+      },
+      death: {
+        imageSrc: "./assets/samuraiMack/Death.png",
+        maxFrames: 6,
+      },
     },
     attackBox: {
       offset: {
@@ -109,6 +117,14 @@ if (canvas && ctx) {
       attack1: {
         imageSrc: "./assets/kenji/Attack1.png",
         maxFrames: 4,
+      },
+      takeHit: {
+        imageSrc: "./assets/kenji/Take hit.png",
+        maxFrames: 3,
+      },
+      death: {
+        imageSrc: "./assets/kenji/Death.png",
+        maxFrames: 7,
       },
     },
     attackBox: {
@@ -175,8 +191,8 @@ if (canvas && ctx) {
       p1.isAttacking &&
       p1.framesCurrent === 4
     ) {
+      p2.takeHit();
       p1.isAttacking = false;
-      p2.health -= 20;
       document.getElementById("p2Health").style.width = p2.health + "%";
     }
 
@@ -189,16 +205,23 @@ if (canvas && ctx) {
       p2.isAttacking &&
       p2.framesCurrent === 2
     ) {
+      p1.takeHit();
       p2.isAttacking = false;
-      p1.health -= 20;
+
       document.getElementById("p1Health").style.width = p1.health + "%";
     }
     if (p2.isAttacking && p2.framesCurrent === 2) {
       p2.isAttacking = false;
     }
     // end game based on health
-    if (p2.health === 0) getMatchResult("P1 WINS");
-    if (p1.health === 0) getMatchResult("P2 WINS");
+    if (p2.health === 0) {
+      getMatchResult("P1 WINS");
+      p2.switchSprite("death");
+    }
+    if (p1.health === 0) {
+      getMatchResult("P2 WINS");
+      p1.switchSprite("death");
+    }
   }
 
   window.addEventListener("keydown", (event) => {

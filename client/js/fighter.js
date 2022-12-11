@@ -36,6 +36,7 @@ class Fighter extends Sprite {
     this.isAttacking = false;
     this.health = 100;
     this.sprites = sprites;
+    this.dead = false;
     for (const sprite in this.sprites) {
       sprites[sprite].image = new Image();
       sprites[sprite].image.src = sprites[sprite].imageSrc;
@@ -45,7 +46,7 @@ class Fighter extends Sprite {
   update() {
     this.draw();
     this.animateFrames();
-
+    if (this.dead) return;
     this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
     this.attackBox.position.y = this.position.y + this.attackBox.offset.y;
     // draw attack box
@@ -64,15 +65,40 @@ class Fighter extends Sprite {
     } else this.velocity.y += GRAVITY;
   }
 
+  takeHit() {
+    this.health -= 20;
+
+    if (this.health <= 0) {
+      this.switchSprite("death");
+    } else {
+      this.switchSprite("takeHit");
+    }
+  }
+
   attack() {
     this.switchSprite("attack1");
     this.isAttacking = true;
   }
 
   switchSprite(sprite) {
+    // overriding all animations with death
+    if (
+      this.image === this.sprites.death.image &&
+      this.framesCurrent === this.sprites.death.maxFrames - 1
+    ) {
+      this.dead = true;
+      return;
+    }
+    // overriding all animations with attacking
     if (
       this.image === this.sprites.attack1.image &&
       this.framesCurrent < this.sprites.attack1.maxFrames - 1
+    )
+      return;
+    // overriding all animations with take hit
+    if (
+      this.image === this.sprites.takeHit.image &&
+      this.framesCurrent < this.sprites.takeHit.maxFrames - 1
     )
       return;
     switch (sprite) {
@@ -108,6 +134,20 @@ class Fighter extends Sprite {
         if (this.image !== this.sprites.attack1.image) {
           this.image = this.sprites.attack1.image;
           this.maxFrames = this.sprites.attack1.maxFrames;
+          this.framesCurrent = 0;
+        }
+        break;
+      case "takeHit":
+        if (this.image !== this.sprites.takeHit.image) {
+          this.image = this.sprites.takeHit.image;
+          this.maxFrames = this.sprites.takeHit.maxFrames;
+          this.framesCurrent = 0;
+        }
+        break;
+      case "death":
+        if (this.image !== this.sprites.death.image) {
+          this.image = this.sprites.death.image;
+          this.maxFrames = this.sprites.death.maxFrames;
           this.framesCurrent = 0;
         }
         break;
