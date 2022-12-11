@@ -1,6 +1,6 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
-
+const socket = io();
 const KEYS = {
   a: {
     pressed: false,
@@ -19,8 +19,11 @@ let TIMER = 60;
 let TIMER_ID;
 
 if (canvas && ctx) {
+  /*   let p1;
+  let p2; */
   canvas.width = 1024;
   canvas.height = 576;
+
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const background = new Sprite({
@@ -34,8 +37,16 @@ if (canvas && ctx) {
     maxFrames: 6,
     imageSrc: "./assets/shop.png",
   });
+  socket.emit("contextCreated", ctx);
 
-  const p1 = new Fighter({
+  socket.on("createP1", (p1) => {
+    console.log(p1);
+    /*   socket.on("createP2", (player) => {
+      p2 = player;
+    }); */
+
+    /* new Fighter({
+    id: "p1",
     position: { x: 0, y: 0 },
     velocity: { x: 0, y: 0 },
     color: "red",
@@ -84,94 +95,97 @@ if (canvas && ctx) {
       width: 140,
       height: 50,
     },
-  });
-  const p2 = new Fighter({
-    position: { x: 400, y: 100 },
-    velocity: { x: 0, y: 0 },
-    color: "blue",
-    offset: {
-      x: 215,
-      y: 198,
-    },
-    imageSrc: "./assets/kenji/Idle.png",
-    maxFrames: 4,
-    framesHold: 24,
-    scale: 2.75,
-    sprites: {
-      idle: {
-        imageSrc: "./assets/kenji/Idle.png",
-        maxFrames: 4,
-      },
-      run: {
-        imageSrc: "./assets/kenji/Run.png",
-        maxFrames: 8,
-      },
-      jump: {
-        imageSrc: "./assets/kenji/Jump.png",
-        maxFrames: 2,
-      },
-      fall: {
-        imageSrc: "./assets/kenji/Fall.png",
-        maxFrames: 2,
-      },
-      attack1: {
-        imageSrc: "./assets/kenji/Attack1.png",
-        maxFrames: 4,
-      },
-      takeHit: {
-        imageSrc: "./assets/kenji/Take hit.png",
-        maxFrames: 3,
-      },
-      death: {
-        imageSrc: "./assets/kenji/Death.png",
-        maxFrames: 7,
-      },
-    },
-    attackBox: {
+  }); */
+    const p2 = new Fighter({
+      id: "p2",
+      position: { x: 400, y: 100 },
+      velocity: { x: 0, y: 0 },
+      color: "blue",
       offset: {
-        x: -175,
-        y: 50,
+        x: 215,
+        y: 198,
       },
-      width: 175,
-      height: 50,
-    },
-  });
-  p1.draw(ctx);
-  p2.draw(ctx);
+      imageSrc: "./assets/kenji/Idle.png",
+      maxFrames: 4,
+      framesHold: 24,
+      scale: 2.75,
+      sprites: {
+        idle: {
+          imageSrc: "./assets/kenji/Idle.png",
+          maxFrames: 4,
+        },
+        run: {
+          imageSrc: "./assets/kenji/Run.png",
+          maxFrames: 8,
+        },
+        jump: {
+          imageSrc: "./assets/kenji/Jump.png",
+          maxFrames: 2,
+        },
+        fall: {
+          imageSrc: "./assets/kenji/Fall.png",
+          maxFrames: 2,
+        },
+        attack1: {
+          imageSrc: "./assets/kenji/Attack1.png",
+          maxFrames: 4,
+        },
+        takeHit: {
+          imageSrc: "./assets/kenji/Take hit.png",
+          maxFrames: 3,
+        },
+        death: {
+          imageSrc: "./assets/kenji/Death.png",
+          maxFrames: 7,
+        },
+      },
+      attackBox: {
+        offset: {
+          x: -175,
+          y: 50,
+        },
+        width: 175,
+        height: 50,
+      },
+    });
 
-  function animate() {
-    window.requestAnimationFrame(animate);
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    background.draw();
-    shop.update();
-    ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    p1.update();
-    p2.update();
+    if (p1 || p2) {
+      p1.draw(ctx);
+      p2.draw(ctx);
 
-    p1.velocity.x = 0;
-    p2.velocity.x = 0;
+      function animate() {
+        window.requestAnimationFrame(animate);
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        background.draw();
+        shop.update();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        p1.update();
+        // p2.update();
 
-    // players movments
+        p1.velocity.x = 0;
+        p2.velocity.x = 0;
 
-    if (KEYS.a.pressed && p1.lastKey === "a") {
-      p1.velocity.x = -5;
-      p1.switchSprite("run");
-    } else if (KEYS.d.pressed && p1.lastKey === "d") {
-      p1.velocity.x = 5;
-      p1.switchSprite("run");
-    } else {
-      p1.switchSprite("idle");
-    }
+        // players movments
 
-    if (p1.velocity.y < 0) {
-      p1.switchSprite("jump");
-    } else if (p1.velocity.y > 0) {
-      p1.switchSprite("fall");
-    }
+        if (KEYS.a.pressed && p1.lastKey === "a") {
+          p1.velocity.x = -5;
+          p1.switchSprite("run");
+        } else if (KEYS.d.pressed && p1.lastKey === "d") {
+          p1.velocity.x = 5;
+          p1.switchSprite("run");
+        } else {
+          p1.switchSprite("idle");
+        }
 
-    if (KEYS.ArrowLeft.pressed && p2.lastKey === "ArrowLeft") {
+        if (p1.velocity.y < 0) {
+          p1.switchSprite("jump");
+        } else if (p1.velocity.y > 0) {
+          p1.switchSprite("fall");
+        }
+
+        /*     if (KEYS.ArrowLeft.pressed && p2.lastKey === "ArrowLeft") {
       p2.velocity.x = -5;
       p2.switchSprite("run");
     } else if (KEYS.ArrowRight.pressed && p2.lastKey === "ArrowRight") {
@@ -186,25 +200,25 @@ if (canvas && ctx) {
     } else if (p2.velocity.y > 0) {
       p2.switchSprite("fall");
     }
+ */
+        // detect colision
+        if (
+          retangularCollision(p1, p2) &&
+          p1.isAttacking &&
+          p1.framesCurrent === 4
+        ) {
+          //    p2.takeHit();
+          p1.isAttacking = false;
 
-    // detect colision
-    if (
-      retangularCollision(p1, p2) &&
-      p1.isAttacking &&
-      p1.framesCurrent === 4
-    ) {
-      p2.takeHit();
-      p1.isAttacking = false;
+          gsap.to("#p2Health", {
+            width: p2.health + "%",
+          });
+        }
 
-      gsap.to("#p2Health", {
-        width: p2.health + "%",
-      });
-    }
-
-    if (p1.isAttacking && p1.framesCurrent === 4) {
-      p1.isAttacking = false;
-    }
-
+        if (p1.isAttacking && p1.framesCurrent === 4) {
+          p1.isAttacking = false;
+        }
+        /* 
     if (
       retangularCollision(p2, p1) &&
       p2.isAttacking &&
@@ -219,40 +233,43 @@ if (canvas && ctx) {
     }
     if (p2.isAttacking && p2.framesCurrent === 2) {
       p2.isAttacking = false;
-    }
-    // end game based on health
-    if (p2.health <= 0) {
-      getMatchResult("P1 WINS");
-    }
-    if (p1.health <= 0) {
-      getMatchResult("P2 WINS");
-    }
-  }
-
-  window.addEventListener("keydown", (event) => {
-    if (!p1.dead) {
-      switch (event.key) {
-        case "w": {
-          p1.velocity.y = -20;
-
-          break;
+    } */
+        // end game based on health
+        if (p2.health <= 0) {
+          getMatchResult("P1 WINS");
         }
-        case "d": {
-          KEYS.d.pressed = true;
-          p1.lastKey = "d";
-          break;
-        }
-        case "a": {
-          KEYS.a.pressed = true;
-          p1.lastKey = "a";
-          break;
-        }
-        case " ": {
-          p1.attack();
-          break;
+        if (p1.health <= 0) {
+          getMatchResult("P2 WINS");
         }
       }
-      if (!p2.dead) {
+
+      window.addEventListener("keydown", (event) => {
+        if (!p1.dead) {
+          switch (event.key) {
+            case "w": {
+              p1.velocity.y = -20;
+              socket.emit("playerAction", p1);
+              break;
+            }
+            case "d": {
+              KEYS.d.pressed = true;
+              p1.lastKey = "d";
+              socket.emit("playerAction", p1);
+              break;
+            }
+            case "a": {
+              KEYS.a.pressed = true;
+              p1.lastKey = "a";
+              socket.emit("playerAction", p1);
+              break;
+            }
+            case " ": {
+              p1.attack();
+              socket.emit("playerAction", p1);
+              break;
+            }
+          }
+          /*     if (!p2.dead) {
         switch (event.key) {
           // P2
           case "j": {
@@ -274,25 +291,25 @@ if (canvas && ctx) {
             break;
           }
         }
-      }
-    }
-  });
-  window.addEventListener("keyup", (event) => {
-    switch (event.key) {
-      case "d": {
-        KEYS.d.pressed = false;
-        break;
-      }
-      case "a": {
-        KEYS.a.pressed = false;
-        break;
-      }
-      case " ": {
-        p1.isAttacking = false;
-        break;
-      }
-      // P2
-      case "j": {
+      } */
+        }
+      });
+      window.addEventListener("keyup", (event) => {
+        switch (event.key) {
+          case "d": {
+            KEYS.d.pressed = false;
+            break;
+          }
+          case "a": {
+            KEYS.a.pressed = false;
+            break;
+          }
+          case " ": {
+            p1.isAttacking = false;
+            break;
+          }
+          // P2
+          /*       case "j": {
         p2.isAttacking = false;
         break;
       }
@@ -303,10 +320,12 @@ if (canvas && ctx) {
       case "ArrowLeft": {
         KEYS.ArrowLeft.pressed = false;
         break;
-      }
+      } */
+        }
+      });
+
+      animate();
+      decreaseTimer();
     }
   });
-
-  animate();
-  decreaseTimer();
 }

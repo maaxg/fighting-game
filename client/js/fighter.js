@@ -1,6 +1,7 @@
 const GRAVITY = 0.6;
 class Fighter extends Sprite {
   constructor({
+    id,
     position,
     velocity,
     color,
@@ -20,7 +21,7 @@ class Fighter extends Sprite {
       offset,
       framesHold,
     });
-
+    this.id = id;
     this.width = 50;
     this.height = 150;
     this.velocity = velocity;
