@@ -145,6 +145,8 @@ if (canvas && ctx) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     background.draw();
     shop.update();
+    ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     p1.update();
     p2.update();
 
@@ -193,7 +195,10 @@ if (canvas && ctx) {
     ) {
       p2.takeHit();
       p1.isAttacking = false;
-      document.getElementById("p2Health").style.width = p2.health + "%";
+
+      gsap.to("#p2Health", {
+        width: p2.health + "%",
+      });
     }
 
     if (p1.isAttacking && p1.framesCurrent === 4) {
@@ -208,7 +213,9 @@ if (canvas && ctx) {
       p1.takeHit();
       p2.isAttacking = false;
 
-      document.getElementById("p1Health").style.width = p1.health + "%";
+      gsap.to("#p1Health", {
+        width: p1.health + "%",
+      });
     }
     if (p2.isAttacking && p2.framesCurrent === 2) {
       p2.isAttacking = false;
