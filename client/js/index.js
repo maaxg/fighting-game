@@ -214,55 +214,59 @@ if (canvas && ctx) {
       p2.isAttacking = false;
     }
     // end game based on health
-    if (p2.health === 0) {
+    if (p2.health <= 0) {
       getMatchResult("P1 WINS");
-      p2.switchSprite("death");
     }
-    if (p1.health === 0) {
+    if (p1.health <= 0) {
       getMatchResult("P2 WINS");
-      p1.switchSprite("death");
     }
   }
 
   window.addEventListener("keydown", (event) => {
-    switch (event.key) {
-      case "w": {
-        p1.velocity.y = -20;
+    if (!p1.dead) {
+      switch (event.key) {
+        case "w": {
+          p1.velocity.y = -20;
 
-        break;
+          break;
+        }
+        case "d": {
+          KEYS.d.pressed = true;
+          p1.lastKey = "d";
+          break;
+        }
+        case "a": {
+          KEYS.a.pressed = true;
+          p1.lastKey = "a";
+          break;
+        }
+        case " ": {
+          p1.attack();
+          break;
+        }
       }
-      case "d": {
-        KEYS.d.pressed = true;
-        p1.lastKey = "d";
-        break;
-      }
-      case "a": {
-        KEYS.a.pressed = true;
-        p1.lastKey = "a";
-        break;
-      }
-      case " ": {
-        p1.attack();
-        break;
-      }
-      // P2
-      case "j": {
-        p2.attack();
-        break;
-      }
-      case "ArrowUp": {
-        p2.velocity.y = -20;
-        break;
-      }
-      case "ArrowRight": {
-        KEYS.ArrowRight.pressed = true;
-        p2.lastKey = "ArrowRight";
-        break;
-      }
-      case "ArrowLeft": {
-        KEYS.ArrowLeft.pressed = true;
-        p2.lastKey = "ArrowLeft";
-        break;
+      if (!p2.dead) {
+        switch (event.key) {
+          // P2
+          case "j": {
+            p2.attack();
+            break;
+          }
+          case "ArrowUp": {
+            p2.velocity.y = -20;
+            break;
+          }
+          case "ArrowRight": {
+            KEYS.ArrowRight.pressed = true;
+            p2.lastKey = "ArrowRight";
+            break;
+          }
+          case "ArrowLeft": {
+            KEYS.ArrowLeft.pressed = true;
+            p2.lastKey = "ArrowLeft";
+            break;
+          }
+        }
       }
     }
   });
@@ -295,6 +299,7 @@ if (canvas && ctx) {
       }
     }
   });
+
   animate();
   decreaseTimer();
 }
